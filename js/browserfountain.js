@@ -92,6 +92,8 @@
         '<p>Click the HTML5 logo to create more.</p>'+
         '<p>Press "x" to toggle forms and texts</p>'+
         '<p>Press "p" to pause animation</p>'+
+        '<p>Press "s" to capture a screenshot</p>'+
+
       '</form>';
 
     var container = document.querySelector( 'section' );
@@ -229,6 +231,17 @@
         running = true;
       }
     }
+    
+    // if s - save as image
+    // @todo add the html5 logo to the canvas rather than on top
+    if ( e.keyCode === 83 ) {
+      // use canvas2image
+      Canvas2Image.saveAsJPEG(canvas);
+      alert('Please rename the file FILENAME.jpg');
+      // annoyingly on a mac using firefox it saved as .part even though complete
+    }
+    
+    
   }, false );
 })();
 
