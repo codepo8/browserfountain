@@ -12,6 +12,7 @@
   HALF_HEIGHT = window.innerHeight / 2,
   canvas = document.querySelector( 'canvas' ),
   context = canvas.getContext( '2d' ),
+  oldhash = false,
   domelms = [],
   running = true,
   mouseDown = false,
@@ -39,35 +40,54 @@
 
   function init() {
     
+    var currentloc = window.location.search.split('?')[1];
+    if ( currentloc ) {
+      parts = currentloc.split('%');
+      MAX_PARTICLES = parts[0];
+      createnumber = parts[1];
+      minvelx = parts[2]; 
+      maxvelx = parts[3];
+      drag = parts[4];
+      gravity = parts[5];
+      logosize = parts[6];
+      minvely = parts[7];
+      maxvely = parts[8];
+      rotate = parts[9] === 'true';
+      blur = parts[10] === 'true';      
+    }
+
     var form = ''+
       '<form>'+
         '<fieldset><legend>Logos</legend>'+
         '<div><label for="maxparticles">Amount of logos</label>'+
-        '<input type="number" id="maxparticles" value="350" size="1"></div>'+
+        '<input type="number" id="maxparticles" value="' + MAX_PARTICLES + 
+        '" size="1"></div>'+
         '<div><label for="createnumber">How many at a time?</label>'+
-        '<input type="number" id="createnumber" value="1" size="2"></div>'+
-        '<div><input type="checkbox" id="rotate" checked>'+
-        '<label for="rotate">Rotate logos</label></div>'+
-        '<div><input type="checkbox" id="blur" checked>'+
+        '<input type="number" id="createnumber" value="' + createnumber + 
+        '" size="2"></div>'+
+        '<div><input type="checkbox" id="rotate" '+(rotate ? 'checked' : '')+
+        '><label for="rotate">Rotate logos</label></div>'+
+        '<div><input type="checkbox" id="blur" '+(blur ? 'checked' : '')+'>'+
         '<label for="blur">Blur logos</label></div>'+
         '<div><label for="logosize">Logo size</label>'+
-        '<input type="number" id="logosize" value="0.8" step="0.1"></div>'+
-        '</fieldset>'+
+        '<input type="number" id="logosize" value="' + logosize + 
+        '" step="0.1"></div></fieldset>'+
         '<fieldset><legend>Physics</legend>'+
         '<div><label for="gravity">Gravity</label>'+
-        '<input type="number" id="gravity" value="0.4" step="0.1"></div>'+
+        '<input type="number" id="gravity" value="' + gravity + 
+        '" step="0.1"></div>'+
         '<div><label for="drag">Drag</label>'+
-        '<input type="number" id="drag" value="0.97" step="0.01"></div>'+
+        '<input type="number" id="drag" value="'+drag+'" step="0.01"></div>'+
         '</fieldset>'+
         '<fieldset><legend>Speeds</legend>'+
         '<div>Horizontal: <label for="minvelx">From</label>'+
-        '<input id="minvelx" value="-15" type="number" size="2">'+
+        '<input id="minvelx" value="' + minvelx + '" type="number">'+
         '<label for="maxvelx">to</label>'+
-        '<input id="maxvelx" value="15" type="number" size="2"></div>'+
+        '<input id="maxvelx" value="' + maxvelx + '" type="number"></div>'+
         '<div>Vertical: <label for="minvely">From</label>'+
-        '<input id="minvely" value="-30" type="number" size="2">'+
+        '<input id="minvely" value="' + minvely + '" type="number">'+
         '<label for="maxvely">to</label>'+
-        '<input id="maxvely" value="-5" type="number" size="2">'+
+        '<input id="maxvely" value="' + maxvelx + '" type="number">'+
         '</div></fieldset>'+
         '<p>Click the HTML5 logo to create more.</p>'+
         '<p>Press "x" to toggle forms and texts</p>'+
@@ -145,7 +165,19 @@
     maxvely = +domelms[ 'maxvely' ].value;
     rotate = domelms[ 'rotate' ].checked;
     blur = domelms[ 'blur' ].checked;
+    var hash = createhash();
+    if(hash !== oldhash){
+      history.pushState({}, 'current', 'index.html?' + hash );
+      oldhash = hash;
+    }
+    
+  }
 
+  function createhash(){
+    var hash = MAX_PARTICLES + '%' + createnumber + '%' + minvelx + 
+               '%' + maxvelx + '%' + drag + '%' + gravity + '%' + logosize +
+               '%' + minvely + '%' + maxvely + '%' + rotate + '%' + blur;
+    return hash;           
   }
 
   function makeParticle( particleCount ) {
@@ -177,13 +209,14 @@
   }
   window.addEventListener( 'load', init, false );
   document.addEventListener( 'keydown', function(e){
+    var display;
     if ( e.keyCode === 88 ) {
       if ( visible ){
         visible = false;
-        var display = 'none';
+        display = 'none';
       } else {
         visible = true;
-        var display = 'block';
+        display = 'block';
       }
       document.querySelector( 'section' ).style.display = display;
       document.querySelector( 'header' ).style.display = display;
