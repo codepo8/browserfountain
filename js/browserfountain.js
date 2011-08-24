@@ -13,10 +13,13 @@
   canvas = document.querySelector( 'canvas' ),
   context = canvas.getContext( '2d' ),
   domelms = [],
+  running = true,
   mouseDown = false,
+  visible = true,
   particles = [],
   MAX_PARTICLES = 350,
   minvelx = -15,
+  blur = true,
   maxvelx = 15,
   minvely = -30,
   maxvely = -5,
@@ -45,6 +48,8 @@
         '<input type="number" id="createnumber" value="1" size="2"></div>'+
         '<div><input type="checkbox" id="rotate" checked>'+
         '<label for="rotate">Rotate logos</label></div>'+
+        '<div><input type="checkbox" id="blur" checked>'+
+        '<label for="blur">Blur logos</label></div>'+
         '<div><label for="logosize">Logo size</label>'+
         '<input type="number" id="logosize" value="0.8" step="0.1"></div>'+
         '</fieldset>'+
@@ -65,6 +70,8 @@
         '<input id="maxvely" value="-5" type="number" size="2">'+
         '</div></fieldset>'+
         '<p>Click the HTML5 logo to create more.</p>'+
+        '<p>Press "x" to toggle forms and texts</p>'+
+        '<p>Press "p" to pause animation</p>'+
       '</form>';
 
     var container = document.querySelector( 'section' );
@@ -93,31 +100,31 @@
   }
 
   function loop() {
-
-    makeParticle( mouseDown ? ( createnumber + 8 ) : createnumber );    
-    context.fillStyle = "rgba(0,0,0,.5)";
-    context.fillRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    for( var i = 0, j = particles.length; i < j; i++ ) {
-      var particle = particles[i]; 
-      particle.render( context ); 
-      particle.update();
-      if( particle.posY > SCREEN_HEIGHT-50 ) {
-        particle.velY *= -0.9; 
-        particle.posY = SCREEN_HEIGHT-50;
+    if ( running ) {
+      makeParticle( mouseDown ? ( createnumber + 8 ) : createnumber );    
+      context.fillStyle = blur ? "rgba(0,0,0,.5)" : "rgb(0,0,0)" ;
+      context.fillRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
+      for( var i = 0, j = particles.length; i < j; i++ ) {
+        var particle = particles[i]; 
+        particle.render( context ); 
+        particle.update();
+        if( particle.posY > SCREEN_HEIGHT-50 ) {
+          particle.velY *= -0.9; 
+          particle.posY = SCREEN_HEIGHT-50;
+        }
       }
+      while( particles.length > MAX_PARTICLES ) {
+        particles.shift();
+      } 
     }
-    while( particles.length > MAX_PARTICLES ) {
-      particles.shift();
-    } 
     requestAnimationFrame( loop, 10 );
-
   }
   
   function cacheDOMelements() {
 
-    var tocache = ['maxparticles', 'createnumber', 'minvelx', 
-                   'maxvelx', 'drag', 'gravity', 'logosize', 
-                   'minvely', 'maxvely', 'rotate'];
+    var tocache = [ 'maxparticles', 'createnumber', 'minvelx', 
+                    'maxvelx', 'drag', 'gravity', 'logosize', 
+                    'minvely', 'maxvely', 'rotate', 'blur' ];
     for( var i = 0, j = tocache.length; i < j; i++ ) {
      var now = tocache[i];
      domelms[now] = document.querySelector( '#' + now ); 
@@ -128,15 +135,16 @@
   function getvalues() {
 
     MAX_PARTICLES = +domelms[ 'maxparticles' ].value;
-    createnumber = +domelms[  'createnumber' ].value;
-    minvelx = +domelms[  'minvelx' ].value;
-    maxvelx = +domelms[  'maxvelx' ].value;
-    drag = +domelms[  'drag' ].value;
-    gravity = +domelms[  'gravity' ].value;
-    logosize = +domelms[  'logosize' ].value;
-    minvely = +domelms[  'minvely' ].value;
-    maxvely = +domelms[  'maxvely' ].value;
-    rotate = domelms[  'rotate' ].checked;
+    createnumber = +domelms[ 'createnumber' ].value;
+    minvelx = +domelms[ 'minvelx' ].value;
+    maxvelx = +domelms[ 'maxvelx' ].value;
+    drag = +domelms[ 'drag' ].value;
+    gravity = +domelms[ 'gravity' ].value;
+    logosize = +domelms[ 'logosize' ].value;
+    minvely = +domelms[ 'minvely' ].value;
+    maxvely = +domelms[ 'maxvely' ].value;
+    rotate = domelms[ 'rotate' ].checked;
+    blur = domelms[ 'blur' ].checked;
 
   }
 
@@ -146,7 +154,7 @@
     for( var i = 0, j = particleCount; i < j; i++ ) {
       var browser = parseInt( randomRange( 0, 5 ), 0 ),
           particle = new ImageParticle( browserimages[browser], HALF_WIDTH,
-                                       SCREEN_HEIGHT-190 ); 
+                                       SCREEN_HEIGHT-220 ); 
       particle.velX = randomRange( minvelx, maxvelx) ;
       particle.velY = randomRange( minvely, maxvely );
 
@@ -168,6 +176,27 @@
     }
   }
   window.addEventListener( 'load', init, false );
+  document.addEventListener( 'keydown', function(e){
+    if ( e.keyCode === 88 ) {
+      if ( visible ){
+        visible = false;
+        var display = 'none';
+      } else {
+        visible = true;
+        var display = 'block';
+      }
+      document.querySelector( 'section' ).style.display = display;
+      document.querySelector( 'header' ).style.display = display;
+      document.querySelector( 'footer' ).style.display = display;
+    }
+    if ( e.keyCode === 80 ) {
+      if ( running ) { 
+        running = false; 
+      } else {
+        running = true;
+      }
+    }
+  }, false );
 })();
 
 /**
