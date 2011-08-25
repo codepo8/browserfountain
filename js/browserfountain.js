@@ -170,12 +170,13 @@
     maxvely = +domelms[ 'maxvely' ].value;
     rotate = domelms[ 'rotate' ].checked;
     blur = domelms[ 'blur' ].checked;
-    var hash = createhash();
-    if(hash !== oldhash){
-      history.pushState({}, 'current', 'index.html?' + hash );
+    if( history.pushState ) {
+      var hash = createhash();
+      if( hash !== oldhash ) {
+        history.pushState({}, 'current', 'index.html?' + hash );
+      }
       oldhash = hash;
     }
-    
   }
 
   function createhash(){
