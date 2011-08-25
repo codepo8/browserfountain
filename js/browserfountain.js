@@ -14,6 +14,7 @@
   context = canvas.getContext( '2d' ),
   oldhash = false,
   domelms = [],
+  logo = false,
   running = true,
   mouseDown = false,
   visible = true,
@@ -99,9 +100,8 @@
     var container = document.querySelector( 'section' );
     container.innerHTML += form;
 
-    var logo = document.createElement( 'div' );
-    logo.id = 'logo';
-    document.body.appendChild( logo );
+    logo = document.createElement( 'img' );
+    logo.src = 'img/5logo.png';
     document.body.appendChild( canvas ); 
     canvas.width = SCREEN_WIDTH; 
     canvas.height = SCREEN_HEIGHT;
@@ -139,6 +139,7 @@
       while( particles.length > MAX_PARTICLES ) {
         particles.shift();
       } 
+      context.drawImage( logo, HALF_WIDTH-100, SCREEN_HEIGHT-220 );
     }
     requestAnimationFrame( loop, 10 );
 
@@ -222,8 +223,11 @@
       particles.push( particle ); 
     }
   }
+  
   window.addEventListener( 'load', init, false );
+  
   document.addEventListener( 'keydown', function(e){
+  
     var display;
     if ( e.keyCode === 88 ) {
       if ( visible ){
@@ -246,16 +250,16 @@
     }
     
     // if s - save as image
-    // @todo add the html5 logo to the canvas rather than on top
     if ( e.keyCode === 83 ) {
       // use canvas2image
       Canvas2Image.saveAsJPEG(canvas);
       alert('Please rename the file FILENAME.jpg');
-      // annoyingly on a mac using firefox it saved as .part even though complete
+      // annoyingly on a mac using firefox it saved as .part 
+      // even though complete
     }
     
-    
   }, false );
+
 })();
 
 /**
