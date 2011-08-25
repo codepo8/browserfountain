@@ -29,7 +29,7 @@
   gravity = 0.4,
   drag = 0.97,
   createnumber = 1,
-  browsers = [ 'ie', 'firefox', 'opera', 'safari', 'chrome' ];
+  browsers = [ 'ie', 'firefox', 'opera', 'safari', 'chrome', 'K47uNg' ];
   browserimages = [];
 
   for( var i = 0, j = browsers.length; i < j; i++ ) {
@@ -122,6 +122,7 @@
   }
 
   function loop() {
+
     if ( running ) {
       makeParticle( mouseDown ? ( createnumber + 8 ) : createnumber );    
       context.fillStyle = blur ? "rgba(0,0,0,.5)" : "rgb(0,0,0)" ;
@@ -140,6 +141,7 @@
       } 
     }
     requestAnimationFrame( loop, 10 );
+
   }
   
   function cacheDOMelements() {
@@ -176,24 +178,35 @@
   }
 
   function createhash(){
+
     var hash = MAX_PARTICLES + '%' + createnumber + '%' + minvelx + 
                '%' + maxvelx + '%' + drag + '%' + gravity + '%' + logosize +
                '%' + minvely + '%' + maxvely + '%' + rotate + '%' + blur;
     return hash;           
+
   }
 
   function makeParticle( particleCount ) {
 
     getvalues();
     for( var i = 0, j = particleCount; i < j; i++ ) {
-      var browser = parseInt( randomRange( 0, 5 ), 0 ),
-          particle = new ImageParticle( browserimages[browser], HALF_WIDTH,
-                                       SCREEN_HEIGHT-220 ); 
+      var browser = parseInt( randomRange( 0, 5 ), 10 );
+      var pic = browserimages[ browser ];
+      var nyan = false;
+      if ( parseInt( randomRange( 0, 30 ), 10 ) === 3 ) {
+        pic = browserimages[5];
+        nyan = true;
+      }
+      particle = new ImageParticle( pic, HALF_WIDTH,
+                                   SCREEN_HEIGHT-220 ); 
       particle.velX = randomRange( minvelx, maxvelx) ;
       particle.velY = randomRange( minvely, maxvely );
 
-
       particle.size = randomRange( 0.4, logosize );
+      if(nyan){
+        particle.size = randomRange( 0.3, 0.5 );
+        this.alpha = 0.5;
+      }
       particle.gravity = gravity; 
 
       if ( rotate ) {
