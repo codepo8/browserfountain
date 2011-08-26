@@ -107,10 +107,10 @@
     canvas.height = SCREEN_HEIGHT;
     requestAnimationFrame( loop,10 );
 
-    logo.addEventListener( 'mousedown', function(e) {
+    document.addEventListener( 'mousedown', function(e) {
       mouseDown = true;
     }, false );
-    logo.addEventListener( 'mouseup', function(e) {
+    document.addEventListener( 'mouseup', function(e) {
       mouseDown = false;
     }, false );
 
